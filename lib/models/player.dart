@@ -10,6 +10,6 @@ class Player {
 
   final Widget image;
   final String name;
-  final double points;
+  final num points;
   final bool isOverseas;
 }

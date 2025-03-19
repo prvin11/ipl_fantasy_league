@@ -1,83 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:ipl_fantasy_league/helper.dart';
-import 'package:ipl_fantasy_league/models/player.dart';
-import 'package:ipl_fantasy_league/models/team.dart';
+import 'package:ipl_fantasy_league/notifiers/data_notifiers.dart';
+import 'package:ipl_fantasy_league/pages/leaderboard.dart';
+import 'package:ipl_fantasy_league/splash.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(LeaderBoardApp());
-}
-
-class LeaderBoardApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: LeaderBoardScreen(),
-      theme: ThemeData(primarySwatch: Colors.deepPurple),
-    );
-  }
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: SplashScreen(),
+    theme: ThemeData(primarySwatch: Colors.deepPurple),
+  ));
 }
 
 class LeaderBoardScreen extends StatelessWidget {
-  final List<Map<String, String>> players = List.generate(
-    5,
-    (index) => {
-      "rank": "0${index + 1}",
-      "name": "Player Name",
-      "matches": index == 2 ? "06" : "05",
-      "kills": "20",
-      "revives": "17",
-      "totalPoints": index == 2 ? "08" : "09",
-      "kda": "03",
-    },
+  LeaderBoardScreen({super.key});
+
+  final Gradient gradient = LinearGradient(
+    colors: [
+      Color(0xFFFFA07A), // Light Coral
+      Color.fromARGB(255, 181, 70, 70), // Dark Red
+    ],
+    stops: [0.4, 0.56],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
   );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Leaderboard'),
-          centerTitle: true,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+              color: Colors.white,
+              child: Consumer<TeamDetails>(
+                builder:
+                    (BuildContext context, TeamDetails value, Widget? child) {
+                  if (value.teamJson == '') {
+                    return CircularProgressIndicator();
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            'LeaderBoards',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 40),
+                          LeaderBoardPage(value.teamJson),
+                        ],
+                      ),
+                    );
+                  }
+                },
+              )),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: buildSNoColumn('S N0', [
-                  Team('Ghosts', Icon(Icons.add), 90, [
-                    Player(
-                        name: 'Virat Kolhi',
-                        image: Container(),
-                        points: 30,
-                        isOverseas: false)
-                  ])
-                ]),
-              ),
-              Expanded(
-                child: buildTeamNameColumn('Team Name', [
-                  Team('Ghosts', Icon(Icons.add), 90, [
-                    Player(
-                        name: 'Virat Kolhi',
-                        image: Container(),
-                        points: 30,
-                        isOverseas: false)
-                  ])
-                ]),
-              ),
-              Expanded(
-                child: buildTeamPointsColumn('Team Points', [
-                  Team('Ghosts', Icon(Icons.add), 90, [
-                    Player(
-                        name: 'Virat Kolhi',
-                        image: Container(),
-                        points: 30,
-                        isOverseas: false)
-                  ])
-                ]),
-              ),
-            ],
-          ),
-        ));
+      ),
+    );
+  }
+
+  Future<void> getFutureBool() async {
+    Future.delayed(Duration(seconds: 3));
   }
 }

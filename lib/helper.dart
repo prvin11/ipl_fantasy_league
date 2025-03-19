@@ -37,7 +37,7 @@ Widget buildTeamPointsColumn(String text, List<Team> teams) {
         if (index == 0) {
           return buildHeaderText(text);
         }
-        return buildContentText('${teams[index - 1].points}');
+        return buildContentText('${teams[index - 1].teamPoints}');
       }),
     ),
   );
