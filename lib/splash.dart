@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ipl_fantasy_league/main.dart';
 import 'package:ipl_fantasy_league/notifiers/data_notifiers.dart';
+import 'package:ipl_fantasy_league/notifiers/refresh_notifier.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -20,30 +21,33 @@ class _SplashScreenState extends State<SplashScreen> {
         () => Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (BuildContext context) => FutureProvider<TeamDetails>(
-                    create: (context) => teamDetails(),
-                    initialData: TeamDetails(''),
-                    child: LeaderBoardScreen()))));
+              builder: (BuildContext context) => MultiProvider(providers: [
+                FutureProvider<TeamDetails>(
+                  create: (context) => teamDetails(),
+                  initialData: TeamDetails(''),
+                ),
+                ChangeNotifierProvider(
+                  create: (context) => RefreshNotifier(),
+                )
+              ], child: LeaderBoardScreen()),
+            )));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-                height: 120, width: 300, child: Image.asset('assets/stump.png')),
-            Text(
-              'IPL Fantasy League',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold),
-            ),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+                "assets/background_splash.png"), // Based on your clipboard content
+            fit: BoxFit.fill, // Ensures the image fits the screen
+          ),
+        ),
+        child: Center(
+          child: SizedBox(
+              height: 500, width: 300, child: Image.asset('assets/icon.png')),
         ),
       ),
     );

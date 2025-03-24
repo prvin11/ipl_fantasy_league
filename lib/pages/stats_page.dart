@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ipl_fantasy_league/custom_list_view.dart';
 import 'package:ipl_fantasy_league/models/player.dart';
 import 'package:ipl_fantasy_league/models/team.dart';
 
@@ -11,20 +12,48 @@ class PlayerDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          leading: BackButton(
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: Text(
-            team.name,
-            style: TextStyle(
-                color: Colors.black, fontSize: 25, fontWeight: FontWeight.bold),
+      home: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+                "assets/background_lead.png"), // Based on your clipboard content
+            fit: BoxFit.fill,
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: SingleChildScrollView(child: PlayerDetails(team.players)),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          extendBody: true,
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(kToolbarHeight),
+            child: AppBar(
+              backgroundColor: Colors.transparent,
+              leading: BackButton(
+                color: Colors.white,
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: Text(
+                team.name,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                      top: 16, bottom: 16, left: 16, right: 16),
+                  child: PlayerDetails(
+                    team.players,
+                    isGhostTeam: team.name.toUpperCase() == 'GHOST',
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -32,9 +61,10 @@ class PlayerDetailsPage extends StatelessWidget {
 }
 
 class PlayerDetails extends StatelessWidget {
-  const PlayerDetails(this.players, {super.key});
+  const PlayerDetails(this.players, {super.key, this.isGhostTeam = false});
 
   final List<Player> players;
+  final bool isGhostTeam;
 
   @override
   Widget build(BuildContext context) {
@@ -46,63 +76,13 @@ class PlayerDetails extends StatelessWidget {
           decoration: BoxDecoration(
               color: Colors.blue.withAlpha(100),
               borderRadius: BorderRadius.circular(10)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              _buildNumberForTeams(index + 1),
-              _buildTeamAvatar(player),
-              _buildTeamName(player),
-              _buildTeamPoints(player)
-            ],
+          child: CommonListView(
+            player: player,
+            index: index + 1,
+            isPlayer: true,
           ),
         );
       }),
-    );
-  }
-
-  Widget _buildNumberForTeams(int number) {
-    final double value = number <= 9 ? 13 : 8;
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: value),
-        child: Text(
-          '#$number',
-          style: TextStyle(
-              color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTeamAvatar(Player player) {
-    return CircleAvatar(
-        backgroundColor: Colors.blue.withAlpha(180),
-        foregroundColor: Colors.black,
-        child: Center(
-          child: Text(player.name.characters.first),
-        ));
-  }
-
-  Widget _buildTeamName(Player player) {
-    return Expanded(
-      child: Center(
-        child: Text(
-          player.name,
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTeamPoints(Player player) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Center(
-        child: Text(
-          player.points.toString(),
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-      ),
     );
   }
 }
